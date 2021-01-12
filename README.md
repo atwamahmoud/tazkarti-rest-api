@@ -19,4 +19,6 @@ or
 or
 
 ``` yarn && yarn build ```
+
+
 This will produce a folder `dist` containing the buit .JS files.
