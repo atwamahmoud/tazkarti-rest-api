@@ -9,8 +9,14 @@ Rest API for Tazkarti App.
 
 ### To Run development
 ``` npm i && npm run dev ```
+
+or
+
 ``` yarn && yarn dev ```
 ### To build for product
 ``` npm i && npm run build ```
+
+or
+
 ``` yarn && yarn build ```
 This will produce a folder `dist` containing the buit .JS files.
