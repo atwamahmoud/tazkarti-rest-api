@@ -1,0 +1,56 @@
+{
+  "name": "x-api",
+  "version": "1.0.0",
+  "description": "API for X project",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "mocha -r ts-node/register tests/**/*.spec.ts",
+    "dev": "nodemon",
+    "build": "tsc",
+    "gen-doc": "apidoc -i src/ -o api-doc/ && typedoc --out code-doc src",
+    "lint": "tslint --project ./"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atwamahmoud/x-api.git"
+  },
+  "author": "Mahmoud Atwa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/atwamahmoud/x-api/issues"
+  },
+  "homepage": "https://github.com/atwamahmoud/x-api#readme",
+  "dependencies": {
+    "@types/nodemailer": "^6.4.0",
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "crypto-js": "^4.0.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "express-ws": "^4.0.0",
+    "generate-password": "^1.5.1",
+    "is-base64": "^1.1.0",
+    "m3u8": "0.0.10",
+    "mongodb": "^3.5.9",
+    "mongoose": "^5.9.25",
+    "nodemon": "^2.0.6"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/body-parser": "^1.19.0",
+    "@types/crypto-js": "^3.1.47",
+    "@types/express": "^4.17.7",
+    "@types/generate-password": "^1.5.1",
+    "@types/is-base64": "^1.1.0",
+    "@types/mongoose": "^5.7.32",
+    "@types/multer": "^1.4.3",
+    "@types/node": "12.12.43",
+    "@types/node-fetch": "^2.5.7",
+    "@types/readable-stream": "2.3.5",
+    "concurrently": "^5.2.0",
+    "ts-node": "^8.10.2",
+    "tslint": "^5.12.1",
+    "typescript": "3.8.3"
+  }
+}
