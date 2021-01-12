@@ -22,3 +22,8 @@ or
 
 
 This will produce a folder `dist` containing the buit .JS files.
+
+### Notes
+1. Tests are not implements
+2. Needs MongoDB to run correctly
+3. See `.env` file
