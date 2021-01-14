@@ -33,9 +33,14 @@ export async function Login(req: Request, res: Response): Promise<void> {
 
     res.send(createSuccessMessage({
         userId: result._id,
-        fName: result.firstName,
-        lName: result.lastName,
+        firstName: result.firstName,
+        lastName: result.lastName,
         role: result.role,
+        gender: result.gender,
+        birthDate: result.birthDate,
+        city: result.city,
+        address: result.address,
+        isValid: result.isValid,
         token
     }));
 

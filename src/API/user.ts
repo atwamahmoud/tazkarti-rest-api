@@ -63,6 +63,7 @@ export async function SignUp(req: Request, res: Response): Promise<void> {
 
     res.send(createSuccessMessage({
         ...data,
+        password: undefined,
         id: userDoc.id,
         token,
     }));
@@ -72,8 +73,8 @@ export async function SignUp(req: Request, res: Response): Promise<void> {
 
 export async function UpdateUser(req: Request, res: Response) {
     try {
-        const user: IUser = await User.findById(req.header("id")) as IUser;
-
+        const user: IUser = await User.findById(req.header("user-id")) as IUser;
+        console.log(req.body);
         user.firstName = req.body.firstName || user.firstName;
         user.lastName = req.body.lastName || user.lastName;
         user.address = req.body.address || user.address;
@@ -82,7 +83,9 @@ export async function UpdateUser(req: Request, res: Response) {
         user.birthDate = new Date(req.body.birthDate) || user.birthDate;
         user.role = req.body.role || user.role;
 
-
+        if(user.role === Roles.Fan && req.body.role === Roles.Manager) {
+            user.isValid = false;
+        }
         if (req.body.password) {
 
             const isSamePassword = await bcrypt.compare(req.body.currentPassword, user.password);
@@ -152,8 +155,8 @@ export async function GetUserPublicData(req: Request, res: Response) {
 
 export async function updateUserValidationStatus(req: Request, res: Response) {
     try {
-        const user = await User.findById(req.header("id")) as IUser;
-        const userToBeUpdated = await User.findById(req.body.userId) as IUser;
+        const user = await User.findById(req.header("user-id")) as IUser;
+        const userToBeUpdated = await User.findById(req.params.id) as IUser;
 
         if (user.role !== Roles.Admin) {
             res.status(403);
@@ -166,9 +169,9 @@ export async function updateUserValidationStatus(req: Request, res: Response) {
             res.send(createErrorMessage("Cannot find such user!"));
         }
 
-        user.isValid = req.body.isValid;
+        userToBeUpdated.isValid = !userToBeUpdated.isValid;
         
-        await user.save();
+        await userToBeUpdated.save();
 
         res.send(createSuccessMessage({
             id: userToBeUpdated.id,
@@ -190,8 +193,8 @@ export async function updateUserValidationStatus(req: Request, res: Response) {
 
 export async function deleteUser(req: Request, res: Response) {
     try {
-        const user = await User.findById(req.header("id")) as IUser;
-        const userToDelete = await User.findById(req.body.userId) as IUser;
+        const user = await User.findById(req.header("user-id")) as IUser;
+        const userToDelete = await User.findById(req.params.id) as IUser;
 
         if (user.role !== Roles.Admin) {
             res.status(403);
@@ -204,11 +207,44 @@ export async function deleteUser(req: Request, res: Response) {
             res.send(createErrorMessage("Cannot find such user!"));
         }
 
-        await user.delete();
+        await userToDelete.delete();
 
         res.send(createSuccessMessage({
-            deletedId: req.body.userId,
+            deletedId: req.params.id,
         }));
+
+    } catch (error) {
+        console.error(error);
+        res.status(500);
+        res.send(createErrorMessage("Uknown error have occured!"));
+    }
+}
+
+export async function GetUsers(req: Request, res: Response) {
+    try {
+        const user = await User.findById(req.header("user-id")) as IUser;
+        const users = await User.find({role:  {$not: {$eq: "Admin"}}}) as IUser[];
+        console.log(user);
+        console.log(req.header("user-id"));
+        if (user.role !== Roles.Admin) {
+            res.status(403);
+            res.send(createErrorMessage("Should be an admin!"));
+            return;
+        }
+
+        res.send(createSuccessMessage({users: users.map(user => ({
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            address: user.address,
+            username: user.username,
+            gender: user.gender,
+            city: user.city,
+            birthDate: user.birthDate,
+            role: user.role,
+            isValid: user.isValid,
+        }))}));
 
     } catch (error) {
         console.error(error);

@@ -4,6 +4,7 @@ import { Models } from "../common";
 export interface IStadium extends Document {
     length: number;
     width: number;
+    name: string;
 }
 
 const StadiumSchema  = new Schema({
@@ -14,7 +15,11 @@ const StadiumSchema  = new Schema({
     length: {
         type: Number,
         required: true,
+    },
+    name: {
+        type: String,
+        required: true
     }
 });
 
-export const Stadium = model(Models.Stadium, StadiumSchema);
+export const Stadium = model(Models.Stadium, StadiumSchema, "stadia");

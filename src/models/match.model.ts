@@ -4,7 +4,7 @@ import { Models } from "../common";
 export interface ISeat {
     x: number;
     y: number;
-    isReserverd: boolean;
+    isReserved: boolean;
     ticketId?: ObjectId;
 }
 
@@ -15,7 +15,8 @@ export interface IMatch extends Document {
     stadium: ObjectId,
     referee: string,
     seats: ISeat[],
-    linesmen: string[]
+    linesmen: string[],
+    ticketPrice: number,
 }
 
 const MatchSchema = new Schema({
@@ -50,8 +51,8 @@ const MatchSchema = new Schema({
         type: [String],
         required: true
     },
-    seats: [{
-        type: {
+    seats: {
+        type: [{
             x: {
                 type: Number,
                 required: true
@@ -68,9 +69,9 @@ const MatchSchema = new Schema({
                 type: Types.ObjectId,
                 ref: Models.Ticket
             },
-        },
+        }],
         required: true
-    }]
+    }
 });
 
-export const Match = model(Models.Match, MatchSchema);
+export const Match = model(Models.Match, MatchSchema, "matches");

@@ -91,5 +91,5 @@ export const UserSchema = new Schema({
     }
 });
 
-const User = model(Models.User, UserSchema);
+const User = model(Models.User, UserSchema, "users");
 export default User;

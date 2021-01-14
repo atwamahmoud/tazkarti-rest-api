@@ -18,16 +18,10 @@ function validCreditCard(creditCard: string): boolean {
     
     if(!areAllNumbers(creditCard)) return false;
     
-    const total = creditCard.split("")
-    .map((num) => parseInt(num))
-    .map((num, i) => i%2 === 0 ? num : num*2)
-    .map((num) => num < 10 ? num : 1 + num - 10)
-    .reduce((acc, curr) => acc+curr);
-
-    return total % 10 === 0;
+    return creditCard.length === 16;
 }
-const xQ: number[] = [];
-const yQ: number[] = [];
+let xQ: number[] = [];
+let yQ: number[] = [];
 
 export async function buyTicket(req: Request, res: Response): Promise<void> {
     try {
@@ -38,7 +32,7 @@ export async function buyTicket(req: Request, res: Response): Promise<void> {
         }
         xQ.push(x);
         yQ.push(y);
-        const user: IUser = await User.findById(req.header("id")) as IUser;
+        const user: IUser = await User.findById(req.header("user-id")) as IUser;
         
         if(user.role !== Roles.Fan) {
             res.status(403);
@@ -66,22 +60,26 @@ export async function buyTicket(req: Request, res: Response): Promise<void> {
             return;
         }
         //Everything is sync from here on..
-        const isTaken = match.seats.find(seat => seat.x === x && seat.y === y && seat.isReserverd);
+        const isTaken = match.seats.find(seat => seat.x === x && seat.y === y && seat.isReserved);
         if(isTaken) {
             res.status(400);
             res.send(createErrorMessage("Already taken!"));
             return;
         }
 
-        match.seats = match.seats.map(seat => {
-            if(seat.x === x && seat.y === y) {
-                return {
-                    ...seat,
-                    isReserverd: true
-                }
-            }
-            return seat;
-        });
+        const seats: ISeat[] = [];
+        
+        for(let i = 0; i < stadium.length; i++) {
+            for(let j = 0; j < stadium.width; j++) {
+                seats.push({
+                    x: i,
+                    y: j,
+                    isReserved: match.seats.find(({x,y}) => x === i && y === j)?.isReserved || i === x && j === y
+                });
+            }   
+        }
+
+        match.seats = seats;
 
         await match.save();
         const data: Record<string, any> = {
@@ -95,12 +93,16 @@ export async function buyTicket(req: Request, res: Response): Promise<void> {
 
         await ticket.save();
 
+        xQ = xQ.filter((X) => X !== x);
+        yQ = yQ.filter((Y) => Y !== y);
+
         res.send(createSuccessMessage({
             ...data,
             id: ticket.id
         }));
 
     } catch (error) {
+        console.log(error);
         res.status(500);
         res.send(createErrorMessage("Unknown error..."));
     }
@@ -108,7 +110,7 @@ export async function buyTicket(req: Request, res: Response): Promise<void> {
 
 export async function cancelTicket(req: Request, res: Response): Promise<void> {
     try {
-        const user: IUser = await User.findById(req.header("id")) as IUser;
+        const user: IUser = await User.findById(req.header("user-id")) as IUser;
  
 
         const ticket: ITicket = await Ticket.findById(req.params.id) as ITicket;
@@ -125,16 +127,21 @@ export async function cancelTicket(req: Request, res: Response): Promise<void> {
         }
 
         const match: IMatch = await Match.findById(ticket.matchId.toString()) as IMatch;
+        const stadium: IStadium = await Stadium.findById(match.stadium) as IStadium;
 
-        match.seats = match.seats.map((seat) => {
-            if(seat.x === ticket.seatX && seat.y === ticket.seatY) {
-                return {
-                    ...seat,
-                    isReserverd: false
-                }
-            }
-            return seat;
-        });
+        const seats: ISeat[] = [];
+
+        for(let i = 0; i < stadium.length; i++) {
+            for(let j = 0; j < stadium.width; j++) {
+                seats.push({
+                    x: i,
+                    y: j,
+                    isReserved: ticket.seatX === i && ticket.seatY === j ? false : match.seats.find(({x,y}) => x === i && y === j)?.isReserved  
+                });
+            }   
+        }
+
+        match.seats = seats;
 
         await match.save();
         await ticket.delete();
@@ -151,6 +158,20 @@ export async function getTickets(req: Request, res: Response): Promise<void> {
     try {
         const tickets: ITicket[] = await Ticket.find({
             matchId: new ObjectId(req.params.id)
+        }) as ITicket[];
+
+
+        res.send(createSuccessMessage({tickets}))
+
+    } catch (error) {
+        console.error(error);
+        res.status(500);
+        res.send(createErrorMessage("Unknown error..."));
+    }
+}export async function getMyTickets(req: Request, res: Response): Promise<void> {
+    try {
+        const tickets: ITicket[] = await Ticket.find({
+            userId: new ObjectId(req.header("user-id"))
         }) as ITicket[];
 
 

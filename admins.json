@@ -1,0 +1,46 @@
+[
+    {
+        "firstName": "Admin",
+        "lastName": "1",
+        "username": "admin1",
+        "password": "123456789",
+        "email": "admin5@efa.org",
+        "city": "cairo",
+        "gender": "Male",
+        "role": "Admin",
+        "birthDate": "2021-01-14T11:07:35.629Z"
+    },
+    {
+        "firstName": "Admin",
+        "lastName": "9",
+        "username": "admin9",
+        "password": "123456789",
+        "email": "admin2@efa.org",
+        "city": "cairo",
+        "gender": "Male",
+        "role": "Admin",
+        "birthDate": "2021-01-14T11:07:35.629Z"
+    },
+    {
+        "firstName": "Admin",
+        "lastName": "3",
+        "username": "admin3",
+        "password": "123456789",
+        "email": "admin3@efa.org",
+        "city": "cairo",
+        "gender": "Male",
+        "role": "Admin",
+        "birthDate": "2021-01-14T11:07:35.629Z"
+    },
+    {
+        "firstName": "Admin",
+        "lastName": "4",
+        "username": "admin4",
+        "password": "123456789",
+        "email": "admin4@efa.org",
+        "city": "cairo",
+        "gender": "Male",
+        "role": "Admin",
+        "birthDate": "2021-01-14T11:07:35.629Z"
+    }
+]

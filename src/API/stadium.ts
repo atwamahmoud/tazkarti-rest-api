@@ -3,16 +3,16 @@ import User, { IUser, Roles } from "../models/user.model";
 import { createErrorMessage, createSuccessMessage } from '../common';
 import { IStadium, Stadium } from '../models/stadium.model';
 
-export async function createStadium(req: Request, res: Response): Promise<void> {
+export async function CreateStadium(req: Request, res: Response): Promise<void> {
     try {
-        const user: IUser = await User.findById(req.header("id")) as IUser;
+        const user: IUser = await User.findById(req.header("user-id")) as IUser;
         
         if(user.role !== Roles.Manager) {
             res.status(403);
             res.send(createErrorMessage("Access Denied!"));
             return;
         }
-        const {length, width} = req.body;
+        const {length, width, name} = req.body;
         
         if(!Number.isInteger(length) || !Number.isInteger(width)) {
             res.status(400);
@@ -22,7 +22,8 @@ export async function createStadium(req: Request, res: Response): Promise<void> 
 
         const data: Record<string, number> = {
             length,
-            width 
+            width,
+            name
         }
 
         const stadium = new Stadium({...data});
@@ -41,9 +42,9 @@ export async function createStadium(req: Request, res: Response): Promise<void> 
     }
 }
 
-export async function updateStadium(req: Request, res: Response): Promise<void> {
+export async function UpdateStadium(req: Request, res: Response): Promise<void> {
     try {
-        const user: IUser = await User.findById(req.header("id")) as IUser;
+        const user: IUser = await User.findById(req.header("user-id")) as IUser;
         
         if(user.role !== Roles.Manager) {
             res.status(403);
@@ -67,7 +68,7 @@ export async function updateStadium(req: Request, res: Response): Promise<void> 
     }
 }
 
-export async function getStadiums(req: Request, res: Response): Promise<void> {
+export async function GetStadiums(req: Request, res: Response): Promise<void> {
     try {
         const stadiums: IStadium[] = await Stadium.find();
         
@@ -75,7 +76,8 @@ export async function getStadiums(req: Request, res: Response): Promise<void> {
             stadiums: stadiums.map(stadium => ({
                 id: stadium.id,
                 length: stadium.length,
-                width: stadium.width
+                width: stadium.width,
+                name: stadium.name
             }))
         }))
 

@@ -13,4 +13,4 @@ const TeamSchema = new Schema({
     },
 });
 
-export const Team = model(Models.Team, TeamSchema);
+export const Team = model(Models.Team, TeamSchema, "teams");
