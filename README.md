@@ -13,7 +13,7 @@ Rest API for Tazkarti App.
 or
 
 ``` yarn && yarn dev ```
-### To build for product
+### To build for production
 ``` npm i && npm run build ```
 
 or
